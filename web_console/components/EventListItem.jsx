@@ -1,6 +1,7 @@
 import React from 'react';
 import css from 'styled-jsx/css';
-import { Avatar, Text, useTheme } from '@zeit-ui/react';
+import { Avatar, Link, Text, useTheme } from '@zeit-ui/react';
+import { humanizeDuration } from '../utils/time';
 
 function useStyles(theme) {
   return css`
@@ -26,17 +27,29 @@ function useStyles(theme) {
   `;
 }
 
-export default function EventListItem({ children, username, created }) {
+export default function EventListItem({ event }) {
   const theme = useTheme();
   const styles = useStyles(theme);
+  const { type, meta, creator, created_at } = event;
+
   return (
     <div className="event">
       <Avatar
-        src={`https://github.com/${username}.png`}
-        alt={`${username} Avatar`}
+        src={creator.avatar_url}
+        alt={`${creator.name} Avatar`}
       />
-      <Text style={{ flex: 1, margin: '0 0 0 10px' }}>{children}</Text>
-      <Text type="secondary">{created}</Text>
+      {type === 'release' && (
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', margin: '0 0 0 10px' }}>
+          <Text b>
+            <Link href={creator.github_url} target="_blank" rel="noopenner noreferer">{creator.name}</Link>
+          </Text>
+          <Text style={{ margin: '0 4px' }}>releases version</Text>
+          <Text b>
+            <Link href={meta.commit_url} target="_blank" rel="noopenner noreferer">{meta.version}</Link>
+          </Text>
+        </div>
+      )}
+      <Text type="secondary">{humanizeDuration(created_at)}</Text>
       <style jsx>{styles}</style>
     </div>
   );
