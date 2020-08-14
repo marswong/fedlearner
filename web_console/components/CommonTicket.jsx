@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Table, Button, Card, Text, Link, Tooltip } from '@zeit-ui/react';
-import AlertCircle from '@geist-ui/react-icons/alertCircle'
+import AlertCircle from '@zeit-ui/react-icons/alertCircle';
 import useSWR from 'swr';
 import produce from 'immer'
 import Layout from './Layout';
@@ -34,8 +34,8 @@ function fillField(data, field, editing) {
   const envPath = ENV_PATH.replace('[replicaType]', 'Master')
 
   if (field.key === 'raw_data') {
-    v = getValueFromEnv(data['public_params'], envPath,'RAW_DATA_SUB_DIR')
-      || getValueFromEnv(data['private_params'], envPath,'RAW_DATA_SUB_DIR')
+    v = getValueFromEnv(data['public_params'], envPath, 'RAW_DATA_SUB_DIR')
+      || getValueFromEnv(data['private_params'], envPath, 'RAW_DATA_SUB_DIR')
     v = v.replace('portal_publish_dir/', '')
   }
   else if (field.key === 'name' && editing) {
@@ -90,7 +90,7 @@ function fillField(data, field, editing) {
  * editing: always write value to field
  * init: this call is for init form value and will not pass any group
  */
-function mapValueToFields({data, fields, targetGroup, type = 'form', editing = false, init = false}) {
+function mapValueToFields({ data, fields, targetGroup, type = 'form', editing = false, init = false }) {
   return produce(fields, draft => {
     draft.map((x) => {
       if (x.groupName) {
@@ -191,7 +191,7 @@ export default function TicketList({
             envs[idx].value = value.toString()
           } else {
             // here envs is not extensible, push will throw error
-            envs = envs.concat({name: el.name, value: value.toString()})
+            envs = envs.concat({ name: el.name, value: value.toString() })
           }
         })
         // trigger immer‘s intercepter
@@ -331,21 +331,21 @@ export default function TicketList({
   // --end---
 
   const onJobTypeChange = useCallback((value, totalData, groupFormType) => {
-    writeFormMeta(totalData,groupFormType)
+    writeFormMeta(totalData, groupFormType)
 
     switch (value) {
       case JOB_TYPE.data_join:
         TICKET_REPLICA_TYPE = TICKET_DATA_JOIN_REPLICA_TYPE
-        setFormMeta({...formMeta, ...TICKET_DATA_JOIN_PARAMS}); break
+        setFormMeta({ ...formMeta, ...TICKET_DATA_JOIN_PARAMS }); break
       case JOB_TYPE.psi_data_join:
         TICKET_REPLICA_TYPE = TICKET_PSI_DATA_JOIN_REPLICA_TYPE
-        setFormMeta({...formMeta, ...TICKET_PSI_DATA_JOIN_PARAMS}); break
+        setFormMeta({ ...formMeta, ...TICKET_PSI_DATA_JOIN_PARAMS }); break
       case JOB_TYPE.nn_model:
         TICKET_REPLICA_TYPE = TICKET_NN_REPLICA_TYPE
-        setFormMeta({...formMeta, ...TICKET_NN_PARAMS}); break
+        setFormMeta({ ...formMeta, ...TICKET_NN_PARAMS }); break
       case JOB_TYPE.tree_model:
         TICKET_REPLICA_TYPE = TICKET_TREE_REPLICA_TYPE
-        setFormMeta({...formMeta, ...TICKET_TREE_PARAMS}); break
+        setFormMeta({ ...formMeta, ...TICKET_TREE_PARAMS }); break
     }
 
     setFields(
@@ -410,13 +410,13 @@ export default function TicketList({
       type: 'jobType',
       label: (
         <>
-          <span style={{paddingRight: '4px'}}>job_type</span>
-          <Tooltip style={{color: '#444'}} text={<span className="formItemLabel">change job type will reset all params</span>}>
-            <span style={{position: 'relative', top: '4px'}}><AlertCircle size={16}/></span>
+          <span style={{ paddingRight: '4px' }}>job_type</span>
+          <Tooltip style={{ color: '#444' }} text={<span className="formItemLabel">change job type will reset all params</span>}>
+            <span style={{ position: 'relative', top: '4px' }}><AlertCircle size={16} /></span>
           </Tooltip>
         </>
       ),
-      props: {type: PAGE_NAME},
+      props: { type: PAGE_NAME },
       required: true,
       default: DEFAULT_JOB_TYPE,
       onChange: onJobTypeChange,
@@ -493,7 +493,7 @@ export default function TicketList({
   };
   const onCreate = () => {
     setFormMeta({ ...INIT_PARAMS })
-    setFields(mapValueToFields({data: formMeta, fields: getDefauktFields(), init: true}))
+    setFields(mapValueToFields({ data: formMeta, fields: getDefauktFields(), init: true }))
     setFormVisible(true);
   }
   const onOk = (ticket) => {
@@ -505,7 +505,7 @@ export default function TicketList({
   const handleEdit = (ticket) => {
     setCurrentTicket(ticket);
     setFormMeta(ticket)
-    setFields(mapValueToFields({data: ticket, fields: getDefauktFields(), editing: true}));
+    setFields(mapValueToFields({ data: ticket, fields: getDefauktFields(), editing: true }));
     setFormVisible(true);
   };
 

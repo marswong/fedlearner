@@ -1,11 +1,11 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import css from 'styled-jsx/css';
 import { Link, Text, Input, Fieldset, Button, Card, Description, useTheme, useInput, Tooltip } from '@zeit-ui/react';
-import AlertCircle from '@geist-ui/react-icons/alertCircle'
+import AlertCircle from '@zeit-ui/react-icons/alertCircle';
 import Search from '@zeit-ui/react-icons/search';
 import NextLink from 'next/link';
 import useSWR from 'swr';
-import produce from 'immer'
+import produce from 'immer';
 
 import { fetcher } from '../libs/http';
 import { FLAppStatus, handleStatus, getStatusColor, JobStatus } from '../utils/job';
@@ -27,7 +27,7 @@ import {
 } from '../constants/form-default'
 import { getParsedValueFromData, fillJSON, getValueFromJson, getValueFromEnv, filterArrayValue } from '../utils/form_utils';
 import { getJobStatus } from '../utils/job'
-import { JOB_TYPE_CLASS, JOB_TYPE } from '../constants/job'
+import { JOB_TYPE_CLASS, JOB_TYPE } from '../constants/job';
 
 // import {mockJobList} from '../constants/mock_data'
 
@@ -162,7 +162,7 @@ const passFieldInfo = fields => produce(fields, draft => {
   })
 })
 
-function mapValueToFields({data, fields, targetGroup, type = 'form', init = false}) {
+function mapValueToFields({ data, fields, targetGroup, type = 'form', init = false }) {
   return produce(fields, draft => {
     draft.map((x) => {
 
@@ -231,7 +231,7 @@ export default function JobList({
   }
 
   filter = filter
-      || useCallback(job => FILTER_TYPES.some(type => type === job.localdata.job_type), [])
+    || useCallback(job => FILTER_TYPES.some(type => type === job.localdata.job_type), [])
 
   const getParamsFormFields = useCallback(() => JOB_REPLICA_TYPE.reduce((total, currType) => {
     total.push(...[
@@ -307,7 +307,7 @@ export default function JobList({
             envs[idx].value = value.toString()
           } else {
             // here envs is not extensible, push will throw error
-            envs = envs.concat({name: el.name, value: value.toString()})
+            envs = envs.concat({ name: el.name, value: value.toString() })
           }
         })
 
@@ -387,16 +387,16 @@ export default function JobList({
     switch (value) {
       case JOB_TYPE.data_join:
         JOB_REPLICA_TYPE = JOB_DATA_JOIN_REPLICA_TYPE
-        setFormMeta({...formMeta, ...JOB_DATA_JOIN_PARAMS}); break
+        setFormMeta({ ...formMeta, ...JOB_DATA_JOIN_PARAMS }); break
       case JOB_TYPE.psi_data_join:
         JOB_REPLICA_TYPE = JOB_PSI_DATA_JOIN_REPLICA_TYPE
-        setFormMeta({...formMeta, ...JOB_PSI_DATA_JOIN_PARAMS}); break
+        setFormMeta({ ...formMeta, ...JOB_PSI_DATA_JOIN_PARAMS }); break
       case JOB_TYPE.nn_model:
         JOB_REPLICA_TYPE = JOB_NN_REPLICA_TYPE
-        setFormMeta({...formMeta, ...JOB_NN_PARAMS}); break
+        setFormMeta({ ...formMeta, ...JOB_NN_PARAMS }); break
       case JOB_TYPE.tree_model:
         JOB_REPLICA_TYPE = JOB_TREE_REPLICA_TYPE
-        setFormMeta({...formMeta, ...JOB_TREE_PARAMS}); break
+        setFormMeta({ ...formMeta, ...JOB_TREE_PARAMS }); break
     }
 
     jobType = value
@@ -417,13 +417,13 @@ export default function JobList({
     {
       key: 'job_type',
       type: 'jobType',
-      props: {type: PAGE_NAME},
+      props: { type: PAGE_NAME },
       required: true,
       label: (
         <>
-          <span style={{paddingRight: '4px'}}>job_type</span>
-          <Tooltip style={{color: '#444'}} text={<span className="formItemLabel">change job type will reset all params</span>}>
-            <span style={{position: 'relative', top: '4px'}}><AlertCircle size={16}/></span>
+          <span style={{ paddingRight: '4px' }}>job_type</span>
+          <Tooltip style={{ color: '#444' }} text={<span className="formItemLabel">change job type will reset all params</span>}>
+            <span style={{ position: 'relative', top: '4px' }}><AlertCircle size={16} /></span>
           </Tooltip>
         </>
       ),
@@ -437,7 +437,7 @@ export default function JobList({
       required: true,
       onChange: (value, formData) => {
         federationId = value
-        setFields(fields => passFieldInfo(mapValueToFields({data: formData, fields})))
+        setFields(fields => passFieldInfo(mapValueToFields({ data: formData, fields })))
       },
       props: {
         initTrigerChange: true
@@ -551,8 +551,8 @@ export default function JobList({
   const [formVisible, setFormVisible] = useState(false);
 
   const onClickCreate = () => {
-    setFormMeta({...INIT_PARAMS})
-    setFields(mapValueToFields({data: mapFormMeta2FullData(fields), fields, init: true}))
+    setFormMeta({ ...INIT_PARAMS })
+    setFields(mapValueToFields({ data: mapFormMeta2FullData(fields), fields, init: true }))
     toggleForm()
   }
   const toggleForm = useCallback(() => {
@@ -612,7 +612,7 @@ export default function JobList({
         className="actionText"
         onClick={() => handleClone(item)}
         type="success"
-        style={{marginRight: `${theme.layout.gap}`}}
+        style={{ marginRight: `${theme.layout.gap}` }}
       >
         Clone
       </Text>

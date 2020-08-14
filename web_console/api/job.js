@@ -1,5 +1,6 @@
 const router = require('@koa/router')();
-const { Op } = require('sequelize');
+const { Op, fn } = require('sequelize');
+const PaginationMiddleware = require('../middlewares/pagination');
 const SessionMiddleware = require('../middlewares/session');
 const FindOptionsMiddleware = require('../middlewares/find_options');
 const k8s = require('../libs/k8s');
@@ -21,11 +22,16 @@ try {
   es_oparator_match_phrase = require('../es.match_phrase');
 } catch (err) { /* */ }
 
-router.get('/api/v1/jobs', SessionMiddleware, FindOptionsMiddleware, async (ctx) => {
-  const jobs = await Job.findAll({
+router.get('/api/v1/jobs', SessionMiddleware, FindOptionsMiddleware, PaginationMiddleware, async (ctx) => {
+  let options = {
     ...ctx.findOptions,
     order: [['created_at', 'DESC']],
-  });
+  };
+  if (ctx.pagination) {
+    options = { ...options, ...ctx.pagination };
+  }
+  const res = await (ctx.pagination ? Job.findAndCountAll(options) : Job.findAll(options));
+  const jobs = ctx.pagination ? res.rows : res;
   const { flapps } = await k8s.getFLAppsByNamespace(namespace);
   let data = [];
   for (job of jobs) {
@@ -50,7 +56,8 @@ router.get('/api/v1/jobs', SessionMiddleware, FindOptionsMiddleware, async (ctx)
       });
     }
   }
-  ctx.body = { data };
+  const body = ctx.pagination ? { data, count: res.count } : { data };
+  ctx.body = body;
 });
 
 router.get('/api/v1/job/:id', SessionMiddleware, async (ctx) => {
@@ -433,7 +440,7 @@ router.post('/api/v1/job/:id/update', SessionMiddleware, async (ctx) => {
   if (old_job.status === 'started' && new_job.status === 'stopped') {
     flapp = (await k8s.getFLApp(namespace, new_job.name)).flapp;
     pods = (await k8s.getFLAppPods(namespace, new_job.name)).pods;
-    old_job.k8s_meta_snapshot = JSON.stringify({flapp, pods});
+    old_job.k8s_meta_snapshot = JSON.stringify({ flapp, pods });
     await k8s.deleteFLApp(namespace, new_job.name);
   } else if (old_job.status === 'stopped' && new_job.status === 'started') {
     const clientYaml = clientGenerateYaml(clientFed, new_job, clientTicket);

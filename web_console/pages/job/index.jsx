@@ -127,11 +127,11 @@ export default function JobList(props) {
   }
 
   const handleFields = fields => produce(fields, draft => {
-      draft.map(field => {
-        if (field.key === 'server_ticket_name') {
-          field.props.federation_id = federationId
-        }
-      })
+    draft.map(field => {
+      if (field.key === 'server_ticket_name') {
+        field.props.federation_id = federationId
+      }
+    })
   })
 
   const labeledList = useMemo(() => {
@@ -208,7 +208,7 @@ export default function JobList(props) {
         className="actionText"
         onClick={() => handleClone(item)}
         type="success"
-        style={{marginRight: `${theme.layout.gap}`}}
+        style={{ marginRight: `${theme.layout.gap}` }}
       >
         Clone
       </Text>
