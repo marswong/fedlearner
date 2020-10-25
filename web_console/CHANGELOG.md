@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.1](https://github.com/bytedance/fedlearner/compare/v1.0.0...v1.0.1) (2020-10-25)
+
+
+### Bug Fixes
+
+* **web_console:** update image config ([3f21259](https://github.com/bytedance/fedlearner/commit/3f212597d8a6e95f8c75ce683e32c6ac1e5a5dc4))
+
 ## 1.0.0 (2020-10-25)
 
 
