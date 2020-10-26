@@ -29,66 +29,11 @@ async function setupDatabase() {
   if (adminRecord.deleted_at) {
     adminRecord.restore();
   }
-
-  const [leaderRecord] = await Federation.findOrCreate({
-    paranoid: false,
-    where: {
-      name: { [Op.eq]: federations.leader.name },
-    },
-    defaults: federations.leader,
-  });
-  if (leaderRecord.deleted_at) {
-    leaderRecord.restore();
-  }
-  leader = leaderRecord;
-
-  const [followerRecord] = await Federation.findOrCreate({
-    paranoid: false,
-    where: {
-      name: { [Op.eq]: federations.follower.name },
-    },
-    defaults: federations.follower,
-  });
-  if (followerRecord.deleted_at) {
-    followerRecord.restore();
-  }
-  follower = followerRecord;
-
-  const [followerTicketRecord] = await Ticket.findOrCreate({
-    paranoid: false,
-    where: {
-      name: { [Op.eq]: tickets.follower.name },
-    },
-    defaults: {
-      ...tickets.follower,
-      federation_id: leader.id,
-      user_id: adminRecord.id,
-    },
-  });
-  if (followerTicketRecord.deleted_at) {
-    followerTicketRecord.restore();
-  }
-  followerTicket = followerTicketRecord;
 }
 
-function setupRpcServer() {
-  return new Promise((resolve, reject) => {
-    rpcServer.bindAsync(
-      follower.k8s_settings.grpc_spec.peerURL,
-      grpc.ServerCredentials.createInsecure(),
-      (err) => {
-        if (err) reject(err);
-        rpcServer.start();
-        resolve();
-      },
-    );
-  });
-}
-
-describe('Federation System', () => {
+describe('Activity API', () => {
   before(async () => {
     await setupDatabase();
-    await setupRpcServer();
     return new Promise((resolve, reject) => {
       request.post('/api/v1/login')
         .send({ username: admin.username, password: admin.username })
@@ -101,8 +46,6 @@ describe('Federation System', () => {
     });
   });
 
-  after(() => rpcServer.forceShutdown());
-
   describe('GET /api/v1/federations', () => {
     it('should return all federations', (done) => {
       request.get('/api/v1/federations')
@@ -112,52 +55,6 @@ describe('Federation System', () => {
           if (err) done(err);
           assert.ok(res.body.data.find((x) => x.name === leader.name));
           assert.ok(res.body.data.find((x) => x.name === follower.name));
-          done();
-        });
-    });
-  });
-
-  describe('GET /api/v1/federations/:id/tickets', () => {
-    it('respond 404 if federation not found', (done) => {
-      request.get('/api/v1/federations/218379128738912/tickets')
-        .set('Cookie', adminCookie)
-        .expect(404)
-        .end((err, res) => {
-          if (err) done(err);
-          assert.deepStrictEqual(res.body.error, 'Federation not found');
-          done();
-        });
-    });
-
-    it('respond 200 with tickets from federation', (done) => {
-      request.get(`/api/v1/federations/${follower.id}/tickets`)
-        .set('Cookie', adminCookie)
-        .expect(200)
-        .end((err, res) => {
-          if (err) done(err);
-          assert.ok(res.body.data.find((x) => x.name === followerTicket.name));
-          done();
-        });
-    });
-
-    it('respond 200 with tickets of specific job_type from federation', (done) => {
-      request.get(`/api/v1/federations/${follower.id}/tickets?job_type=data_join`)
-        .set('Cookie', adminCookie)
-        .expect(200)
-        .end((err, res) => {
-          if (err) done(err);
-          assert.ok(res.body.data.find((x) => x.name === followerTicket.name && x.job_type === 'data_join'));
-          done();
-        });
-    });
-
-    it('respond 200 with tickets of specific role from federation', (done) => {
-      request.get(`/api/v1/federations/${follower.id}/tickets?role=Follower`)
-        .set('Cookie', adminCookie)
-        .expect(200)
-        .end((err, res) => {
-          if (err) done(err);
-          assert.ok(res.body.data.find((x) => x.name === followerTicket.name && x.role === 'Follower'));
           done();
         });
     });
