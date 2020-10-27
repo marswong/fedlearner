@@ -22,7 +22,7 @@ const parseErrorResponse = async (e) => {
 class DockerClient {
   constructor() {
     const prefixUrl = 'https://hub.docker.com/v2';
-    this.image = 'fedlearner/fedlearner-web-console';
+    this.image = 'marswong/fedlearner-web-console-test';
     this.prefixUrl = prefixUrl;
     this.client = ky.create({
       prefixUrl,

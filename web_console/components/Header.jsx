@@ -213,12 +213,10 @@ export default function Header() {
       {/* <Popover.Item>
         <Link href="/docs">Docs</Link>
       </Popover.Item> */}
-      {user?.is_admin && (
-        <Popover.Item>
-          <Link href="/settings">Settings</Link>
-        </Popover.Item>
-      )}
-      {user?.is_admin && <Popover.Item line />}
+      <Popover.Item>
+        <Link href="/setting">Settings</Link>
+      </Popover.Item>
+      <Popover.Item line />
       {signingOut
         ? <Loading />
         : (

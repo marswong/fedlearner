@@ -1,20 +1,14 @@
 const assert = require('assert');
 const { Op } = require('sequelize');
 const supertest = require('supertest');
-const grpc = require('@grpc/grpc-js');
 const server = require('../fixtures/server');
+const { release } = require('../fixtures/activity');
 const models = require('../../models');
 const { admin } = require('../fixtures/user');
-const federations = require('../fixtures/federation');
-const tickets = require('../fixtures/ticket');
-const rpcServer = require('../../rpc/server');
 
-const { Federation, User, Ticket } = models;
+const { User } = models;
 const request = supertest(server.callback());
 let adminCookie;
-let leader;
-let follower;
-let followerTicket;
 
 async function setupDatabase() {
   await models.sequelize.sync();
@@ -26,6 +20,7 @@ async function setupDatabase() {
     },
     defaults: admin,
   });
+
   if (adminRecord.deleted_at) {
     adminRecord.restore();
   }
@@ -46,15 +41,15 @@ describe('Activity API', () => {
     });
   });
 
-  describe('GET /api/v1/federations', () => {
-    it('should return all federations', (done) => {
-      request.get('/api/v1/federations')
+  describe('GET /api/v1/activities', () => {
+    it('should return releases as expected', (done) => {
+      request.get('/api/v1/activities')
         .set('Cookie', adminCookie)
         .expect(200)
         .end((err, res) => {
           if (err) done(err);
-          assert.ok(res.body.data.find((x) => x.name === leader.name));
-          assert.ok(res.body.data.find((x) => x.name === follower.name));
+          const item = res.body.data.data.find((x) => x.id === release.id);
+          assert.deepStrictEqual(item, release);
           done();
         });
     });

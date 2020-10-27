@@ -6,101 +6,8 @@ import { Button, Card, Text, Link, useTheme } from '@zeit-ui/react';
 import FolderPlusIcon from '@zeit-ui/react-icons/folderPlus';
 import { fetcher } from '../libs/http';
 import Layout from '../components/Layout';
-import EventListItem from '../components/EventListItem';
+import ActivityListItem from '../components/ActivityListItem';
 import JobCard from '../components/JobCard';
-
-const EVENTS = [
-  {
-    id: 1,
-    type: 'release',
-    meta: {
-      version: '10afeb0',
-      sha: '10afeb06c0c6ec37bae5aaf6eaefff7bcddf4ef1',
-      commit_url: 'https://github.com/bytedance/fedlearner/commit/10afeb0',
-      message: 'add the grpc options for etcd client (#243)\n\n* add the grpc options for etcd\r\n\r\n* make lint pass\r\n\r\n* more large generated psi output file size\r\n\r\n* more oom check for rsa psi processor\r\n\r\nCo-authored-by: fangchenliaohui <fangchenliaohui@bytedance.com>',
-    },
-    creator: {
-      name: 'fclh',
-      email: 'fclh1991@gmail.com',
-      github_username: 'fclh1991',
-      github_url: 'https://github.com/fclh1991',
-      avatar_url: 'https://avatars3.githubusercontent.com/u/4548685?v=4',
-    },
-    created_at: '2020-08-13T08:08:31Z',
-  },
-  {
-    id: 2,
-    type: 'release',
-    meta: {
-      version: '10afeb0',
-      sha: '10afeb06c0c6ec37bae5aaf6eaefff7bcddf4ef1',
-      commit_url: 'https://github.com/bytedance/fedlearner/commit/10afeb0',
-      message: 'add the grpc options for etcd client (#243)\n\n* add the grpc options for etcd\r\n\r\n* make lint pass\r\n\r\n* more large generated psi output file size\r\n\r\n* more oom check for rsa psi processor\r\n\r\nCo-authored-by: fangchenliaohui <fangchenliaohui@bytedance.com>',
-    },
-    creator: {
-      name: 'fclh',
-      email: 'fclh1991@gmail.com',
-      github_username: 'fclh1991',
-      github_url: 'https://github.com/fclh1991',
-      avatar_url: 'https://avatars3.githubusercontent.com/u/4548685?v=4',
-    },
-    created_at: '2020-08-13T08:08:31Z',
-  },
-  {
-    id: 3,
-    type: 'release',
-    meta: {
-      version: '10afeb0',
-      sha: '10afeb06c0c6ec37bae5aaf6eaefff7bcddf4ef1',
-      commit_url: 'https://github.com/bytedance/fedlearner/commit/10afeb0',
-      message: 'add the grpc options for etcd client (#243)\n\n* add the grpc options for etcd\r\n\r\n* make lint pass\r\n\r\n* more large generated psi output file size\r\n\r\n* more oom check for rsa psi processor\r\n\r\nCo-authored-by: fangchenliaohui <fangchenliaohui@bytedance.com>',
-    },
-    creator: {
-      name: 'fclh',
-      email: 'fclh1991@gmail.com',
-      github_username: 'fclh1991',
-      github_url: 'https://github.com/fclh1991',
-      avatar_url: 'https://avatars3.githubusercontent.com/u/4548685?v=4',
-    },
-    created_at: '2020-08-13T08:08:31Z',
-  },
-  {
-    id: 4,
-    type: 'release',
-    meta: {
-      version: '10afeb0',
-      sha: '10afeb06c0c6ec37bae5aaf6eaefff7bcddf4ef1',
-      commit_url: 'https://github.com/bytedance/fedlearner/commit/10afeb0',
-      message: 'add the grpc options for etcd client (#243)\n\n* add the grpc options for etcd\r\n\r\n* make lint pass\r\n\r\n* more large generated psi output file size\r\n\r\n* more oom check for rsa psi processor\r\n\r\nCo-authored-by: fangchenliaohui <fangchenliaohui@bytedance.com>',
-    },
-    creator: {
-      name: 'fclh',
-      email: 'fclh1991@gmail.com',
-      github_username: 'fclh1991',
-      github_url: 'https://github.com/fclh1991',
-      avatar_url: 'https://avatars3.githubusercontent.com/u/4548685?v=4',
-    },
-    created_at: '2020-08-13T08:08:31Z',
-  },
-  {
-    id: 5,
-    type: 'release',
-    meta: {
-      version: '10afeb0',
-      sha: '10afeb06c0c6ec37bae5aaf6eaefff7bcddf4ef1',
-      commit_url: 'https://github.com/bytedance/fedlearner/commit/10afeb0',
-      message: 'add the grpc options for etcd client (#243)\n\n* add the grpc options for etcd\r\n\r\n* make lint pass\r\n\r\n* more large generated psi output file size\r\n\r\n* more oom check for rsa psi processor\r\n\r\nCo-authored-by: fangchenliaohui <fangchenliaohui@bytedance.com>',
-    },
-    creator: {
-      name: 'fclh',
-      email: 'fclh1991@gmail.com',
-      github_username: 'fclh1991',
-      github_url: 'https://github.com/fclh1991',
-      avatar_url: 'https://avatars3.githubusercontent.com/u/4548685?v=4',
-    },
-    created_at: '2020-08-13T08:08:31Z',
-  },
-];
 
 function useStyles(theme) {
   return css`
@@ -160,13 +67,14 @@ export default function Overview() {
   const theme = useTheme();
   const styles = useStyles(theme);
   const router = useRouter();
-  const [options] = useMemo(() => ({
+  const options = useMemo(() => ({
     searchParams: { offset: 0, limit: 10 },
-  }));
-  const events = useMemo(() => EVENTS);
+  }), []);
   const [max, setMax] = useState(10);
   const { data } = useSWR(['jobs', options], fetcher);
+  const { data: activityData } = useSWR(['activities', options], fetcher);
   const jobs = data?.data.filter((x) => x.metadata).slice(0, max) ?? [];
+  const activities = activityData?.data ?? [];
   const goToJob = () => router.push('/datasource/job');
 
   useEffect(() => {
@@ -208,10 +116,13 @@ export default function Overview() {
         </div>
         <div className="activity">
           <Text h4>Recent Activity</Text>
-          {events.map((x) => <EventListItem key={x.id} event={x} />)}
-          <Text>
-            <Link className="colorLink" href="/activity" color>View All Activity</Link>
-          </Text>
+          {activities.map((x) => <ActivityListItem key={x.id} activity={x} />)}
+          {activities.length === 0 && <Text>No activity yet</Text>}
+          {activities.length > 0 && (
+            <Text>
+              <Link className="colorLink" href="/activity" color>View All Activity</Link>
+            </Text>
+          )}
         </div>
       </div>
 
